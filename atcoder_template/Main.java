@@ -27,6 +27,60 @@ public class Main {
 		long comb(int n, int m);
 	}
 
+	interface MobiusFunction {
+		int get(int n);
+	}
+
+	/**
+	 * メビウス関数をエラトステネスの篩っぽく前計算するクラスです。
+	 * 計算量はO(1)で、前計算でO(N logN)です。
+	 */
+	class SieveMobiusFunction implements MobiusFunction {
+		int size;
+		int[] mobiusFunctionValues;
+
+		public SieveMobiusFunction(int size) {
+			this.size = size;
+			mobiusFunctionValues = new int[size];
+
+			mobiusFunctionValues[0] = 0;
+			mobiusFunctionValues[1] = 1;
+			for (int i = 2; i < size; i++) {
+				mobiusFunctionValues[i] = 1;
+			}
+			for (int i = 2; i * i < size; i++) {
+				for (int k = 1; i * i * k < size; k++) {
+					mobiusFunctionValues[i * i * k] *= 0;
+				}
+			}
+
+			for (int i = 2; i < size; i++) {
+				if (mobiusFunctionValues[i] == 1) {
+					for (int k = 1; i * k < size; k++) {
+						mobiusFunctionValues[i * k] *= -2;
+					}
+				}
+				if (mobiusFunctionValues[i] > 1) {
+					mobiusFunctionValues[i] = 1;
+				}
+				if (mobiusFunctionValues[i] < -1) {
+					mobiusFunctionValues[i] = -1;
+				}
+			}
+		}
+
+		@Override
+		public int get(int n) {
+			if (n > size) {
+				throw new RuntimeException("n is greater than size.");
+			}
+			if (n < 0) {
+				return 0;
+			}
+			return mobiusFunctionValues[n];
+		}
+	}
+
 	/**
 	 * 組み合わせ計算を階乗の値で行うクラスです(MOD対応)
 	 * 階乗とその逆元は前計算してテーブルに格納します。
