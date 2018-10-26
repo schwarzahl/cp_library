@@ -81,7 +81,32 @@ public class Main {
 		}
 	}
 
-	// TODO: N=1e12とかでも使える定義通り素因数分解して確認する実装を用意する
+	/**
+	 * メビウス関数を定義通り計算するクラスです。
+	 * 計算量はO(logN)です。
+	 */
+	class PrimeFactorizationMobiusFunction implements MobiusFunction {
+		@Override
+		public int get(int n) {
+			if (n <= 0) {
+				return 0;
+			}
+			if (n == 1) {
+				return 1;
+			}
+			int num = 0;
+			for (int i = 2; i < n; i++) {
+				if (n % i == 0) {
+					n /= i;
+					num++;
+					if (n % i == 0) {
+						return 0;
+					}
+				}
+			}
+			return num % 2 == 0 ? -1 : 1;
+		}
+	}
 
 	/**
 	 * 組み合わせ計算を階乗の値で行うクラスです(MOD対応)
